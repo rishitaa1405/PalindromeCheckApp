@@ -1,17 +1,24 @@
 import java.util.*;
 
-// Strategy Interface
-interface PalindromeStrategy {
-    boolean checkPalindrome(String input);
-}
+public class PalindromeCheckerApp {
 
-// Stack-based strategy
-class StackStrategy implements PalindromeStrategy {
+    // Method 1: Two Pointer Approach
+    public static boolean twoPointerPalindrome(String str) {
+        int start = 0;
+        int end = str.length() - 1;
 
-    public boolean checkPalindrome(String input) {
+        while (start < end) {
+            if (str.charAt(start) != str.charAt(end)) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
 
-        String str = input.toLowerCase().replaceAll("\\s+", "");
-
+    // Method 2: Stack Based Approach
+    public static boolean stackPalindrome(String str) {
         Stack<Character> stack = new Stack<>();
 
         for (char c : str.toCharArray()) {
@@ -26,80 +33,48 @@ class StackStrategy implements PalindromeStrategy {
 
         return true;
     }
-}
 
-// Deque-based strategy
-class DequeStrategy implements PalindromeStrategy {
-
-    public boolean checkPalindrome(String input) {
-
-        String str = input.toLowerCase().replaceAll("\\s+", "");
-
-        Deque<Character> deque = new LinkedList<>();
-
-        for (char c : str.toCharArray()) {
-            deque.addLast(c);
-        }
-
-        while (deque.size() > 1) {
-
-            if (deque.removeFirst() != deque.removeLast()) {
-                return false;
-            }
-        }
-
-        return true;
+    // Method 3: String Reverse Approach
+    public static boolean reversePalindrome(String str) {
+        String reversed = new StringBuilder(str).reverse().toString();
+        return str.equals(reversed);
     }
-}
-
-// Context class
-class PalindromeChecker {
-
-    private PalindromeStrategy strategy;
-
-    public PalindromeChecker(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean executeStrategy(String input) {
-        return strategy.checkPalindrome(input);
-    }
-}
-
-// Main application
-public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Choose Palindrome Algorithm:");
-        System.out.println("1. Stack Strategy");
-        System.out.println("2. Deque Strategy");
-
-        int choice = sc.nextInt();
-        sc.nextLine(); // consume newline
-
         System.out.print("Enter a string: ");
         String input = sc.nextLine();
 
-        PalindromeStrategy strategy;
+        // Normalize input
+        String normalized = input.toLowerCase().replaceAll("\\s+", "");
 
-        if (choice == 1) {
-            strategy = new StackStrategy();
-        } else {
-            strategy = new DequeStrategy();
-        }
+        // Two Pointer Performance
+        long start1 = System.nanoTime();
+        boolean result1 = twoPointerPalindrome(normalized);
+        long end1 = System.nanoTime();
 
-        PalindromeChecker checker = new PalindromeChecker(strategy);
+        // Stack Performance
+        long start2 = System.nanoTime();
+        boolean result2 = stackPalindrome(normalized);
+        long end2 = System.nanoTime();
 
-        boolean result = checker.executeStrategy(input);
+        // Reverse String Performance
+        long start3 = System.nanoTime();
+        boolean result3 = reversePalindrome(normalized);
+        long end3 = System.nanoTime();
 
-        if (result) {
-            System.out.println("The given string is a Palindrome.");
-        } else {
-            System.out.println("The given string is NOT a Palindrome.");
-        }
+        // Display results
+        System.out.println("\nPalindrome Check Results:");
+        System.out.println("Two Pointer Result: " + result1);
+        System.out.println("Execution Time: " + (end1 - start1) + " ns");
+
+        System.out.println("\nStack Result: " + result2);
+        System.out.println("Execution Time: " + (end2 - start2) + " ns");
+
+        System.out.println("\nReverse String Result: " + result3);
+        System.out.println("Execution Time: " + (end3 - start3) + " ns");
 
         sc.close();
     }
